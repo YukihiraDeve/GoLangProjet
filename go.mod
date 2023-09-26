@@ -1,4 +1,4 @@
-module github.com/YukihiraDeve/GoLangProjet.git
+module main
 
 go 1.21.1
 

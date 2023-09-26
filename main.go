@@ -1,12 +1,11 @@
-package exo4
+package main
 
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"database/sql"
 
 	_ "github.com/lib/pq"
 )
@@ -26,15 +25,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(string(body))
-	connect()
+	connect(string(body))
 }
 
-func connect() {
-	db, err := sql.Open("postgres", "user=postgres password=postgrespw host=host.docker.internal dbname=test sslmode=disable")
+func connect(value string) {
+	value = "value"
+	db, err := sql.Open("postgres", "user=postgres password=postgrespw host=host.docker.internal port=55001 dbname=postgres sslmode=disable")
 	if err != nil {
 		log.Fatalf("Error : Unable to connect to database : %v", err)
 	}
+	sqlStatement := `INSERT INTO return_api VALUES ($1)`
+	result, err := db.Exec(sqlStatement, value)
+	if err != nil {
+		log.Fatalf("Error : Unable to execute update : %v", err)
+	}
+	affectedRows, _ := result.RowsAffected()
+	fmt.Printf("Updated %d rows\n", affectedRows)
 	defer db.Close()
 }
